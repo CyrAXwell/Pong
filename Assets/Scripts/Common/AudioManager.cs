@@ -4,7 +4,6 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     private const string PLAYER_PREFS_SFX_VOLUME = "SFXVolume";
-    private const string SFX_PITCH = "SFXPitch";
     private const float MIN_VOLUME = 0.0001f;
 
     [SerializeField] private AudioMixer _audioMixer;

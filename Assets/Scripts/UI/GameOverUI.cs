@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,18 +20,30 @@ public class GameOverUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
         _pongGameManager = pongGameManager;
         _mainMenuUI = mainMenuUI;
         _pongGameManager.OnGameOver += OnGameOver;
+        _pongGameManager.OnPlayerDisconnected += OnPlayerDisconnection;
     }
 
     private void Start()
     {
-        _playAgainButton.onClick.AddListener( () => { Hide(); ;_pongGameManager.RestartGame(); _mainMenuButton.Select();} );
-        _mainMenuButton.onClick.AddListener( () => { Hide(); _mainMenuUI.Show(); _pongGameManager.DestroyPlayers(); } );
+        _playAgainButton.onClick.AddListener( () => { 
+            Hide(); 
+            _mainMenuButton.GetComponent<ButtonWithPointerUI>().ManualSelect();
+            _mainMenuButton.Select();
+            _pongGameManager.OnPlayAgainButton(); 
+        } );
+        _mainMenuButton.onClick.AddListener( () => { Hide(); PongGameMultipayer.Instance.ShutDown(); _mainMenuUI.Show();  } );
     }
 
     private void OnGameOver(object sender, EventArgs e)
     {
         Show();
         UpdateVisual();
+    }
+
+    private void OnPlayerDisconnection(object sender, EventArgs e)
+    {
+        if (_pongGameManager.IsGameOver() && !NetworkManager.Singleton.IsServer)
+            Hide();
     }
 
     private void UpdateVisual()

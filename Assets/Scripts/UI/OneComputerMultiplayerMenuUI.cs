@@ -11,7 +11,6 @@ public class OneComputerMultiplayerMenuUI : MonoBehaviour, IShowWindowUI, IHideW
     [SerializeField] private Button _startGameButton;
     [SerializeField] private Button _exitButton;
     [SerializeField] private TMP_Text _goalText;
-    [SerializeField] private LevelSettingSO levelSettingSO;
     [SerializeField] private TMP_Text _player1Controls;
     [SerializeField] private TMP_Text _player2Controls;
     
@@ -30,14 +29,15 @@ public class OneComputerMultiplayerMenuUI : MonoBehaviour, IShowWindowUI, IHideW
     private void Start()
     {
         _goalChangeButton.onClick.AddListener( () => { ChangeButtonState(_goalEnumerator); } );
-        IEnumerator difficulty = levelSettingSO.Difficulty.GetEnumerator();
+        IEnumerator difficulty = _pongGameManager.GetLevelSettingSO().Difficulty.GetEnumerator();
         difficulty.MoveNext();
+        bool isCPUPlayer = false;
         _startGameButton.onClick.AddListener( () => {  
-            _pongGameManager.StartGame(PLAYERS_AMOUNT, (int)_goalEnumerator.Current, (PongAIDifficultySO)difficulty.Current); 
+            _pongGameManager.StartGame(isCPUPlayer, (int)_goalEnumerator.Current, (PongAIDifficultySO)difficulty.Current); 
             Hide(); });
         _exitButton.onClick.AddListener( () => { Hide(); _multiplayerMenuUI.Show();});
 
-        _goalEnumerator = levelSettingSO.Goals.GetEnumerator();
+        _goalEnumerator = _pongGameManager.GetLevelSettingSO().Goals.GetEnumerator();
         _goalEnumerator.MoveNext();
         UpdateVisual();
     }

@@ -13,14 +13,21 @@ public class PongAILeading : IPongAIMovement
     private bool _hasMoveVector;
     private Vector2 _moveVector;
 
-
     public PongAILeading(Ball ball, Player player, Player otherPlayer)
     {
         _ball = ball;
         _player = player;
         _otherPlayer = otherPlayer;
+        _player.OnPlayerDestroy += OnPlayerDestroy;
         _ball.OnStartMoving += OnBallStartMoving;
         _otherPlayer.OnBallCollide += OnBallCollideOtherPlayer;
+    }
+
+    private void OnPlayerDestroy(object sender, EventArgs e)
+    {
+        _player.OnPlayerDestroy -= OnPlayerDestroy;
+        _ball.OnStartMoving -= OnBallStartMoving;
+        _otherPlayer.OnBallCollide -= OnBallCollideOtherPlayer;
     }
 
     private void OnBallStartMoving(object sender, EventArgs e)
@@ -95,7 +102,6 @@ public class PongAILeading : IPongAIMovement
                 Debug.DrawRay(origin, direction * wallHit.distance - GetRaycastOriginOffset(wallHit, direction), Color.yellow, 100f);
                 origin = wallHit.point - GetRaycastOriginOffset(wallHit, direction);
                 direction.z *= -1;
-
             }
             else if (goalHit.collider != null)
             {
@@ -107,7 +113,5 @@ public class PongAILeading : IPongAIMovement
             }
             maxRaycastCount --;
         }
-    }
-    
-    
+    }      
 }

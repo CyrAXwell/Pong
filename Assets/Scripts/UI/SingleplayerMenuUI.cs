@@ -13,7 +13,6 @@ public class SingleplayerMenuUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
     [SerializeField] private Button _exitButton;
     [SerializeField] private TMP_Text _difficultText;
     [SerializeField] private TMP_Text _goalText;
-    [SerializeField] private LevelSettingSO levelSettingSO;
 
     private PongGameManager _pongGameManager;
     private IEnumerator _goalEnumerator;
@@ -30,15 +29,16 @@ public class SingleplayerMenuUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
     {
         _difficultChangeButton.onClick.AddListener( () => { ChangeButtonState(_difficultEnumerator); });
         _goalChangeButton.onClick.AddListener( () => { ChangeButtonState(_goalEnumerator); });
+        bool isCPUPlayer = true;
         _startGameButton.onClick.AddListener( () => 
         { 
-            _pongGameManager.StartGame(PLAYERS_AMOUNT, (int)_goalEnumerator.Current, (PongAIDifficultySO)_difficultEnumerator.Current); 
+            _pongGameManager.StartGame(isCPUPlayer, (int)_goalEnumerator.Current, (PongAIDifficultySO)_difficultEnumerator.Current); 
             Hide(); 
         });
         _exitButton.onClick.AddListener( () => { Hide(); _mainMenuUI.Show();});
 
-        _difficultEnumerator = levelSettingSO.Difficulty.GetEnumerator();
-        _goalEnumerator = levelSettingSO.Goals.GetEnumerator();
+        _difficultEnumerator = _pongGameManager.GetLevelSettingSO().Difficulty.GetEnumerator();
+        _goalEnumerator = _pongGameManager.GetLevelSettingSO().Goals.GetEnumerator();
 
         _difficultEnumerator.MoveNext();
         _goalEnumerator.MoveNext();

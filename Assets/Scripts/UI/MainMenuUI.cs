@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +6,7 @@ public class MainMenuUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
     [SerializeField] private Button _singleplayerButton;
     [SerializeField] private Button _multiplayerButton;
     [SerializeField] private Button _optionsButton;
+    [SerializeField] private Button _exitButton;
 
     private SingleplayerMenuUI _singleplayerMenuUI;
     private MultiplayerMenuUI _multiplayerMenuUI;
@@ -26,6 +26,7 @@ public class MainMenuUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
         _singleplayerButton.onClick.AddListener(() => { Hide(); _singleplayerMenuUI.Show(); });
         _multiplayerButton.onClick.AddListener(() => { Hide(); _multiplayerMenuUI.Show(); });
         _optionsButton.onClick.AddListener(() => { Hide(); _optionsUI.Show(); });
+        _exitButton.onClick.AddListener(() => { Application.Quit(); });
     }
     
     public void Show()

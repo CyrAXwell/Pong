@@ -13,20 +13,26 @@ public class GamePauseUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
     private PongGameManager _pongGameManager;
     private MainMenuUI _mainMenuUI;
 
+    private bool _isExitGame;
+
     public void Initialize(PongGameManager pongGameManager, MainMenuUI mainMenuUI)
     {
         _pongGameManager = pongGameManager;
         _mainMenuUI = mainMenuUI;
 
-        _pongGameManager.OnGamePaused += OnGamePaused;
-        _pongGameManager.OnGameUnpaused += OnGameUnpaused; 
+        _pongGameManager.OnLocalGamePaused += OnGamePaused;
+        _pongGameManager.OnLocalGameUnpaused += OnGameUnpaused; 
+        _pongGameManager.OnPlayerDisconnected += OnPlayerDisconnection;
     }
 
     private void Start()
     {
         _resumeButton.onClick.AddListener( () => { _pongGameManager.TogglePauseGame(); } );
         _soundButton.onClick.AddListener( () => { AudioManager.Instance.ChangeVolume(); UpdateVisual(); });
-        _mainMenuButton.onClick.AddListener( () => { _pongGameManager.EndTheGame(); _pongGameManager.TogglePauseGame(); _mainMenuUI.Show();}); 
+        _mainMenuButton.onClick.AddListener( () => { 
+            _isExitGame = true;
+            _pongGameManager.TogglePauseGame(); 
+        }); 
     }
 
     private void OnGameUnpaused(object sender, EventArgs e)
@@ -34,12 +40,24 @@ public class GamePauseUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
         _mainMenuButton.GetComponent<ButtonWithPointerUI>().ManualSelect();
         _mainMenuButton.Select();
         Hide();
+
+        if (_isExitGame)
+        {
+            _isExitGame = false;
+            PongGameMultipayer.Instance.ShutDown();
+            _mainMenuUI.Show();
+        }
     }
 
     private void OnGamePaused(object sender, EventArgs e)
     {
         Show();
         UpdateVisual();
+    }
+
+    private void OnPlayerDisconnection(object sender, EventArgs e)
+    {
+        Hide();
     }
 
     private void UpdateVisual()
@@ -56,8 +74,8 @@ public class GamePauseUI : MonoBehaviour, IShowWindowUI, IHideWindowUI
 
     private void OnDestroy()
     {
-        _pongGameManager.OnGamePaused -= OnGamePaused;
-        _pongGameManager.OnGameUnpaused -= OnGameUnpaused;
+        _pongGameManager.OnLocalGamePaused -= OnGamePaused;
+        _pongGameManager.OnLocalGameUnpaused -= OnGameUnpaused;
     }
 
     public void Hide()

@@ -7,15 +7,16 @@ public class ScoreUI : MonoBehaviour , IShowWindowUI, IHideWindowUI
     [SerializeField] private TMP_Text _leftPlayerScoreText;
     [SerializeField] private TMP_Text _rightPlayerScoreText;
 
-    private PongGameManager _gameManager;
+    private PongGameManager _pongGameManager;
 
-    public void Initialize(PongGameManager gameManager)
+    public void Initialize(PongGameManager pongGameManager)
     {
-        _gameManager = gameManager;
-        _gameManager.OnScoreChange += OnScoreChange;
-        _gameManager.OnStartGame += OnStartGame;
-        _gameManager.OnGameOver += OnGameOver;
-        _gameManager.OnEndTheGame += OnGameOver;
+        _pongGameManager = pongGameManager;
+        _pongGameManager.OnScoreChange += OnScoreChange;
+        _pongGameManager.OnStartGame += OnStartGame;
+        _pongGameManager.OnGameOver += OnGameOver;
+        _pongGameManager.OnPlayerDisconnected += OnGameOver;
+        _pongGameManager.OnShotDown += OnGameOver;
 
     }
 
@@ -47,7 +48,8 @@ public class ScoreUI : MonoBehaviour , IShowWindowUI, IHideWindowUI
 
     private void UpdateVisual()
     {
-        _leftPlayerScoreText.text = _gameManager.GetLeftPlayerScore().ToString();
-        _rightPlayerScoreText.text = _gameManager.GetRightPlayerScore().ToString();
+        _leftPlayerScoreText.text = _pongGameManager.GetLeftPlayerScore().ToString();
+        _rightPlayerScoreText.text = _pongGameManager.GetRightPlayerScore().ToString();
     }
+    
 }
